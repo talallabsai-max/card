@@ -1,0 +1,15 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    match /profiles/{profileId} {
+      // Anyone can read any profile — this is what makes the public
+      // microsite work when someone scans the QR/NFC without logging in.
+      allow read: if true;
+
+      // Only the signed-in owner can create or edit their own profile.
+      // profileId MUST equal their Firebase Auth uid (enforced in admin.html).
+      allow write: if request.auth != null && request.auth.uid == profileId;
+    }
+  }
+}
